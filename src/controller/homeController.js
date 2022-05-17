@@ -1,22 +1,31 @@
-import connection from '../configs/connectDB';
+import pool from '../configs/connectDB';
 
-let getHomePage = (req, res) => {
-  // simple query
-  let data = [];
-  connection.query('SELECT * FROM `users`', function (err, results, fields) {
-    results.map((row) => {
-      data.push({
-        id: row.id,
-        email: row.email,
-        address: row.address,
-        firstname: row.firstname,
-        lastname: row.lastname,
-      });
-    });
-    return res.render('index.ejs', { dataUser: JSON.stringify(data) });
-  });
+let getHomepage = async (req, res) => {
+  const [rows, fields] = await pool.execute('SELECT * FROM users');
+  return res.render('index.ejs', { dataUser: rows, test: 'abc string test' });
+};
+
+let getDetailPage = async (req, res) => {
+  let userId = req.params.id; //Gui ID len Server theo REQUEST
+  let [user, fields] = await pool.execute(`select * from users where id = ?`, [userId]); //Nhan ID tu Server de thuc hien RESPONSE => send ra screen
+  return res.send(JSON.stringify(user));
+};
+
+let createNewUser = async (req, res) => {
+  let { firstName, lastName, email, address } = req.body; //Gui fn,ln, email, addr trong BODY len Server theo REQUEST
+
+  await pool.execute('insert into users(firstName, lastName, email, address) values (?, ?, ?, ?)', [
+    firstName,
+    lastName,
+    email,
+    address,
+  ]);
+
+  return res.redirect('/');
 };
 
 module.exports = {
-  getHomePage,
+  getHomepage,
+  getDetailPage,
+  createNewUser,
 };
