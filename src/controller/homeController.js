@@ -3,12 +3,14 @@ import multer from 'multer';
 
 let getHomepage = async (req, res) => {
   const [rows, fields] = await pool.execute('SELECT * FROM users');
+
   return res.render('index.ejs', { dataUser: rows, test: 'abc string test' });
 };
 
 let getDetailPage = async (req, res) => {
   let userId = req.params.id; //Gui ID len Server theo REQUEST
   let [user, fields] = await pool.execute(`select * from users where id = ?`, [userId]); //Nhan ID tu Server de thuc hien RESPONSE => send ra screen
+
   return res.send(JSON.stringify(user));
 };
 
@@ -27,13 +29,16 @@ let createNewUser = async (req, res) => {
 
 let deleteUser = async (req, res) => {
   let userId = req.body.userId;
+
   await pool.execute('delete from users where id = ?', [userId]);
+
   return res.redirect('/');
 };
 
 let getEditPage = async (req, res) => {
   let id = req.params.id;
   let [user] = await pool.execute('Select * from users where id = ?', [id]);
+
   return res.render('update.ejs', { dataUser: user[0] }); // x <- y
 };
 
@@ -47,6 +52,7 @@ let postUpdateUser = async (req, res) => {
 
   return res.redirect('/');
 };
+
 let getUploadFilePage = async (req, res) => {
   return res.render('uploadFile.ejs');
 };
@@ -79,6 +85,7 @@ let handleUploadMultipleFiles = async (req, res) => {
   for (index = 0, len = files.length; index < len; ++index) {
     result += `<img src="/image/${files[index].filename}" width="300" style="margin-right: 20px;">`;
   }
+
   result += '<hr/><a href="/upload">Upload more images</a>';
   res.send(result);
 };

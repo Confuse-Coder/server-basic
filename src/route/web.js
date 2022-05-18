@@ -22,6 +22,7 @@ const imageFilter = function (req, file, cb) {
     req.fileValidationError = 'Only image files are allowed!';
     return cb(new Error('Only image files are allowed!'), false);
   }
+
   cb(null, true);
 };
 
@@ -36,8 +37,10 @@ const initWebRoute = (app) => {
   router.get('/detail/user/:id', homeController.getDetailPage);
   router.post('/create-new-user', homeController.createNewUser);
   router.post('/delete-user', homeController.deleteUser);
+
   router.get('/edit-user/:id', homeController.getEditPage);
   router.post('/update-user', homeController.postUpdateUser);
+
   router.get('/upload', homeController.getUploadFilePage);
   router.post('/upload-profile-pic', upload.single('profile_pic'), homeController.handleUploadFile); //Su dung Middleware
   router.post(
@@ -57,9 +60,6 @@ const initWebRoute = (app) => {
     },
     homeController.handleUploadMultipleFiles
   );
-  router.get('/about', (req, res) => {
-    res.send(`I'm Eric!`);
-  });
 
   return app.use('/', router);
 };
